@@ -88,6 +88,7 @@ fwheel buildWheel(){
 
 // commands
 
+// hi there
 void prompt(void){
     printf(">> ");
     fflush(stdout);
