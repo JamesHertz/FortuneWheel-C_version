@@ -2,15 +2,24 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "wheel.h"
 //#include <termios.h> 
 
 // errors:
 
-
-
-// -> ask for name
 #define MAX_LINE 1024
+#define DELIMITERS  "\n\t\r "
+
+#define MAX_GUESS  250
+
+// outputs amount of points gained or lost after a commad
+#define outV(w, cmd)   player _p = fw_player(w);\
+                        int _pts = player_points(_p);\
+                        cmd;            \
+                        _pts = player_points(_p) - _pts;\
+                        if(_pts > 0) printf("+%d\n", _pts); \
+                        else printf("%d\n", _pts) 
 
 char buf[MAX_LINE];
 
@@ -42,8 +51,6 @@ void readLine(){
     }
 }
 char * getStr(int maxSize){
-    // clear the buffer
-    // fflush(stdin); // will it work?
     readLine();
     char * str = strtrim(buf);
     int len = strlen(str);
@@ -95,13 +102,45 @@ void prompt(void){
 }
 
 void runPuzzle(fwheel w){
-    char * guess = strtok(NULL, "\n");    
-    guess = strtrim(guess); // think about strtrim
-    if(!guess || !strlen(guess)){
-        printf("puzzle: NULL\n");
-    }else{
-        printf("puzzle: %s\n", guess);
+    char * guess = strtrim(strtok(NULL, "\n"));
+    if(!guess){
+        printf("Invalid guess.\n");
+        return;
     }
+    outV(w, fw_puzzle(w, guess));
+
+}
+
+bool getInt(char *s, int * value){
+    char *err;
+    *value = strtol(s, &err, 0);
+    return !*err && !errno; 
+}
+
+bool validPGuess(int value){
+    return value > 0 && value <= MAX_GUESS;
+}
+bool validLetter(char *s){
+    return strlen(s) == 1 && islower(*s);
+}
+
+void runRollete(fwheel w){
+    char *ptr;
+    int value;
+    ptr = strtok(NULL, DELIMITERS);
+    
+    if(!ptr || !getInt(ptr, &value) || !validPGuess(value)){
+        printf("Invalid value!\n");
+        return;
+    }
+        
+    ptr = strtrim(strtok(NULL, "\n"));
+    if(!ptr || !validLetter(ptr)){
+        printf("Invalid letter!\n");
+        return;
+    }
+    outV(w, fw_rollete(w, *ptr, value));
+
 }
 
 void displayPanel(fwheel w){
@@ -115,7 +154,9 @@ int main(void){
     int err = 0;
     if(w = buildWheel()){
         printf("'%s' Welcome to Fortune Wheel!!\n", player_name(fw_player(w)));
-        while(!fw_gameIsOver(w)){
+        printf("panel: %s\n",fw_panel(w));
+        bool exit = false;
+        while(!exit){
             prompt();
             readLine();
             //  handle panel something else :)
@@ -124,24 +165,18 @@ int main(void){
             else if(!strcmp(cmd, "puzzle")){
                 runPuzzle(w);
             }else if(!strcmp(cmd, "rollete")){
-                printf("executing rollete\n");
+                runRollete(w);
             }else if(!strcmp(cmd, "panel")){
                 displayPanel(w);
             }else if(!strcmp(cmd, "help")){
                 printf("listing commands\n");
             }else if(!strcmp(cmd, "exit")){
-                break;
+                exit=true;
             }else{
                 printf("Unknown command: %s\n", cmd);
             }
         }
         
-
-
-	// puzzle ->
-	// rollete ->
-	// points ->
-	// help ->
     }
 
     printf("Bye\n");

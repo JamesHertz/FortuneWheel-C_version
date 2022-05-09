@@ -1,13 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
-//#include <ctype.h>
+#include <ctype.h>
 #include "wheel.h"
 #include "player.h"
 
 #define UPPUZZLE    1000
 #define DOWNPUZZLE    2000
-#define A   'a'
-#define Z   'z' 
 #define RSIGN   '-'
 
 struct fw{
@@ -18,7 +16,7 @@ struct fw{
 static void build_panel(fwheel w){
     int i;
     for(i = 0; w->secret[i]; i++){
-        if(w->secret[i] >= A && w->secret[i] <= Z) // isalpha?
+        if(islower(w->secret[i]))
             w->panel[i] = RSIGN;
         else
             w->panel[i] = w->secret[i];
@@ -30,6 +28,7 @@ bool fw_validSecret(char * secret){
     int len = strlen(secret);
     return len > 0 || len <= MAX_NAME_LEN;
 }
+
 // think about secret :)
 int fw_init(fwheel *w, char * secret, char * player_name){
     int err;

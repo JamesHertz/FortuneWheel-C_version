@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include "player.h"
 #include "wheel.h"
+#include <ctype.h>
 
 // player tests
 #define run_test(t) t(); printf("%s(): SUCCESS\n", #t) 
@@ -46,18 +46,18 @@ void miniTestW(){
     fwheel w;
     assert(!fw_init(&w, "i was here", "James Hertz"));
     player p = fw_player(w);
-    printf("board: %s\n", fw_board(w));
+    printf("board: %s\n", fw_panel(w));
     printf("secret: %s\n", fw_secret(w));
     printf("player_name: %s\n", player_name(p));
     printf("isover: %s\n", boolToStr(fw_gameIsOver(w)));
     fw_puzzle(w, "was here");
     printf("puzzle.....\n");
-    printf("board: %s\n", fw_board(w));
+    printf("board: %s\n", fw_panel(w));
     printf("player_points: %d\n", player_points(p));
 
     printf("puzzle.....\n");
     fw_puzzle(w, "i was here");
-    printf("board: %s\n", fw_board(w));
+    printf("board: %s\n", fw_panel(w));
     printf("player_points: %d\n", player_points(p));
     printf("isover: %s\n", boolToStr(fw_gameIsOver(w)));
 
@@ -92,12 +92,12 @@ void testRollete(){
     for(int i = 0; i < sizeof(g); i++){
         gained = false;
         int stimes = c_times(secret, g[i]);
-        int btimes = c_times(fw_board(w), g[i]);
+        int btimes = c_times(fw_panel(w), g[i]);
         int gpoints= 100 + (rand() % 900);
         fw_rollete(w, g[i], gpoints);
         if(stimes && !btimes){
             points += stimes * gpoints;
-            btimes = c_times(fw_board(w), g[i]);
+            btimes = c_times(fw_panel(w), g[i]);
             gained=true;
         }else
             points -= gpoints;
@@ -108,7 +108,7 @@ void testRollete(){
         DEBUG
         if(!cond){
             printf("gained: %s\n", boolToStr(gained));
-            printf("board: %s\n", fw_board(w));
+            printf("board: %s\n", fw_panel(w));
             printf("secret: %s\n", fw_secret(w));
             printf("guess: %c\n", g[i]);
             printf("gpoints: %d\n", gpoints);
@@ -155,6 +155,12 @@ void testPuzzle(){
 
 int main(void){
 
+/*
+    char s[] = {'a', 'b', ',', '.', '0'};
+    for(int i = 0; i < sizeof(s); i++){
+        printf("islower('%c') = %s\n", s[i], boolToStr(islower(s[i])));
+    }
+    */
     srand(time(NULL));
     run_test(testPlayerInit);
     run_test(testPlayerPoints);
