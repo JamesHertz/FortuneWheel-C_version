@@ -4,9 +4,9 @@
 #include "wheel.h"
 #include "player.h"
 
-#define UPPUZZLE    1000
-#define DOWNPUZZLE    2000
 #define RSIGN   '-'
+
+typedef char secret[MAX_SECRET_LEN + 1];
 
 struct fw{
     secret secret, panel;

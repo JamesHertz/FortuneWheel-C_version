@@ -14,12 +14,17 @@
 #define MAX_GUESS  250
 
 // outputs amount of points gained or lost after a commad
-#define outV(w, cmd)   player _p = fw_player(w);\
-                        int _pts = player_points(_p);\
-                        cmd;            \
-                        _pts = player_points(_p) - _pts;\
-                        if(_pts > 0) printf("+%d\n", _pts); \
-                        else printf("%d\n", _pts) 
+#define outV(w, cmd)  \
+     do{ \
+            player _p = fw_player(w);\
+            int _pts = player_points(_p);\
+            cmd; \
+            _pts = player_points(_p) - _pts;\
+            if(_pts > 0)  \
+                printf("+%d\n", _pts); \
+            else \
+                printf("%d\n", _pts); \
+        }while(0)
 
 char buf[MAX_LINE];
 
@@ -103,10 +108,16 @@ void prompt(void){
 
 void runPuzzle(fwheel w){
     char * guess = strtrim(strtok(NULL, "\n"));
-    if(!guess){
+    if(!(guess && strlen(guess))){
         printf("Invalid guess.\n");
         return;
     }
+
+    if(fw_gameIsOver(w)){
+        printf("The game is over!\n");
+        return;
+    }
+
     outV(w, fw_puzzle(w, guess));
 
 }
@@ -129,16 +140,22 @@ void runRollete(fwheel w){
     int value;
     ptr = strtok(NULL, DELIMITERS);
     
-    if(!ptr || !getInt(ptr, &value) || !validPGuess(value)){
+    if(!(ptr && getInt(ptr, &value) && validPGuess(value))){
         printf("Invalid value!\n");
         return;
     }
         
     ptr = strtrim(strtok(NULL, "\n"));
-    if(!ptr || !validLetter(ptr)){
+    if(!(ptr && validLetter(ptr))){
         printf("Invalid letter!\n");
         return;
     }
+    
+    if(fw_gameIsOver(w)){
+        printf("The game is over!\n");
+        return;
+    }
+
     outV(w, fw_rollete(w, *ptr, value));
 
 }
@@ -147,6 +164,15 @@ void displayPanel(fwheel w){
     player p = fw_player(w);
     printf("panel: %s\n", fw_panel(w));
     printf("Player: \vname: %.50s; points: %d\n", player_name(p), player_points(p));
+}
+
+
+void help(){
+    printf("commads:\n");
+    printf(" * rollete <value> <character> - if such character appear in the secret and wasn't\ndiscovered yet the player gains (the number of times the character appears the secret) x (value) points\n");
+    printf(" * puzzle <guess> - tries to guess the secret. If the player does it, the player gains %d points else it loses %d points\n", UPPUZZLE, DOWNPUZZLE);
+// the rest ...
+
 }
 
 int main(void){
@@ -160,7 +186,7 @@ int main(void){
             prompt();
             readLine();
             //  handle panel something else :)
-            char * cmd = strtok(buf, "\n\r \t");
+            char * cmd = strtok(buf, DELIMITERS);
             if(!cmd); // do nothing :)
             else if(!strcmp(cmd, "puzzle")){
                 runPuzzle(w);
@@ -169,11 +195,11 @@ int main(void){
             }else if(!strcmp(cmd, "panel")){
                 displayPanel(w);
             }else if(!strcmp(cmd, "help")){
-                printf("listing commands\n");
+                help();
             }else if(!strcmp(cmd, "exit")){
                 exit=true;
             }else{
-                printf("Unknown command: %s\n", cmd);
+                printf("Unknown command!\n");
             }
         }
         

@@ -1,15 +1,18 @@
 #ifndef _FW_
 
+#define _FW_
+
 #include <stdbool.h>
 #include "player.h"
 
-#define _FW_
+#define UPPUZZLE    1000
+#define DOWNPUZZLE    2000
+
 #define MAX_SECRET_LEN 255
 //255
 
 typedef struct fw * fwheel;
 
-typedef char secret[MAX_SECRET_LEN + 1];
 
 int fw_init(fwheel *w, char * secret, char * player_name);
 
