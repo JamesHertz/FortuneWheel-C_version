@@ -54,7 +54,7 @@ bool fw_gameIsOver(fwheel w){
 
 // seaches for the guess in w->secret 
 // if it appears in w->secret and in w->panel returns -1
-    // it appears in w->secret
+// it appears in w->secret
 static int solve_guess(fwheel w, char guess){
     int count = 0;
     char *panel = w->panel, * secret = w->secret;
@@ -68,7 +68,6 @@ static int solve_guess(fwheel w, char guess){
     return count;
 }
 
-// bugs
 void fw_rollete(fwheel w, char guess, int points){
     int times = solve_guess(w, guess);
     if(!times) player_takePoints(w->player, points);

@@ -156,6 +156,7 @@ void runRollete(fwheel w){
         return;
     }
 
+
     outV(w, fw_rollete(w, *ptr, value));
 
 }
@@ -169,7 +170,7 @@ void displayPanel(fwheel w){
 
 void help(){
     printf("commads:\n");
-    printf(" * rollete <value> <character> - if such character appear in the secret and wasn't\ndiscovered yet the player gains (the number of times the character appears the secret) x (value) points\n");
+    printf(" * rollete <value> <character> - if such character appear in the secret and wasn't discovered yet the player gains (the number of times the character appears the secret) x (value) points\n");
     printf(" * puzzle <guess> - tries to guess the secret. If the player does it, the player gains %d points else it loses %d points\n", UPPUZZLE, DOWNPUZZLE);
 // the rest ...
 
